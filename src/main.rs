@@ -1,13 +1,12 @@
-use std::i64;
-
-use percentage::Percentage;
-use percentage::PercentageDecimal;
-use rand::Rng;
+// use percentage::Percentage;
+// use percentage::PercentageDecimal;
+// use rand::Rng;
 use rand::distributions::Uniform;
 use rand::distributions::Distribution;
 use rand::rngs::ThreadRng;
 use soloud::*;
 
+#[derive(Clone)]
 struct Door {
     prize: bool,
     chosen: bool,
@@ -34,30 +33,32 @@ fn game_show(num: i64, change_choice: bool) -> GameshowResult {
     let mut rng:ThreadRng = rand::thread_rng();
     let mut doors:Vec<Door> = Vec::new();  
     println!("Populating Door Vec");
-    for door in 0..num{
+    for a in 0..num{
         doors.push(Door{prize: false, chosen: false, opened: false});
     }
     let random_door = Uniform::from(0..num);
     println!("Choosing Prize Door");
     
     let prize_door = random_door.sample(&mut rng);
-    doors[prize_door].prize = true;
+    doors[prize_door as usize].prize = true;
     println!("Prize door is: {}", prize_door);
 
-    println!("Choosing Initial Door");
+    println!("Choosing Initial Door"); 
     let chosen_door = random_door.sample(&mut rng);
-    doors[chosen_door].chosen = true;
+    doors[chosen_door as usize].chosen = true;
     println!("Chosen door is: {}", chosen_door);
     
-    // if change_choice {
-    //     println!("Opening Other Doors");
-    //     for mut door in doors{
-    //     if (door.chosen == false && door.prize == false ) {
-    //         door.opened = true; 
-    //     }
-    // }
+    if change_choice {
+        println!("Opening Other Doors");
+        for mut i in &mut doors {
+            if i.chosen == false && i.prize == false  {i.opened = true;}
+        }
+        // let mut new_door_list:Vec<Door> = Vec::new(); 
+        // for j in doors{if j.opened == false && j.chosen == false {new_door_list.push(j.clone());}}
+        return new_choice(doors, prize_door)
+    }
 
-    if (chosen_door == prize_door) {
+    if chosen_door == prize_door {
         return GameshowResult{winner: true}
     }
     else {
@@ -66,29 +67,39 @@ fn game_show(num: i64, change_choice: bool) -> GameshowResult {
 
 }
 
-fn simulation(num_doors: i64, num_simulations: i64, change_choice: bool) -> PercentageDecimal{
+fn new_choice(doors: Vec<Door>, prize_door: i64) -> GameshowResult{
+    let mut new_door_list:Vec<Door> = Vec::new(); 
+    let mut rng:ThreadRng = rand::thread_rng();
+    for door in doors {if door.opened == false && door.chosen == false {new_door_list.push(door);}} // Remove opened doors from options and change from the previously chosen door
+    let random_door = Uniform::from(0..new_door_list.len());
+    let newly_chosen_door: i64 = random_door.sample(&mut rng) as i64;
+    if newly_chosen_door == prize_door {
+        return GameshowResult{winner: true}
+    }
+    else {
+        return GameshowResult{winner: false}
+    }
+}
+
+fn simulation(num_doors: i64, num_simulations: i64, change_choice: bool) -> f64{
     let mut simulations_remaining = num_simulations;
     let mut won_games = 0;
-    while simulations_remaining >= 0{
+    // let mut rng:ThreadRng = rand::thread_rng();
+    while simulations_remaining != 0{
         let game = game_show(num_doors, change_choice);
         if game.winner {won_games = won_games + 1};
         simulations_remaining = simulations_remaining - 1;
-        break;
     }
-    let win_percent = Percentage::from_decimal(won_games as f64 / simulations_remaining as f64);
+    // let win_percent = Percentage::from_decimal(won_games as f64 / num_simulations as f64);
+    let win_percent = won_games as f64 / num_simulations as f64;
     return win_percent;
 }
 
 
 fn main() {
-;
     println!("Suppose you're on a game show, and you're given the choice of three doors: Behind one door is a car; behind the others, goats.");
     println!("You pick a door, say No. 1, and the host, who knows what's behind the doors, opens another door, say No. 3, which has a goat.");
     println!("She then says to you, \"Do you want to pick door No. 2?\" Is it to your advantage to switch your choice?");
     play_goat_bleet();
+    println!("Win rate: {}", simulation(3, 100, false)); 
 }
-
-
-// let base_example_door_num:i8 = 3;
-// let second_example_door_num:i8 = 4;
-// let many_doors:i64 = i64::MAX;
