@@ -118,17 +118,12 @@ mod simple_user_input {
     }
 }
 
-//Source: https://kerkour.com/rust-read-file
 
-fn read_file_line_by_line(filepath: &str) -> Result<(), Box<dyn std::error::Error>> {
-    let file = File::open(filepath)?;
-    let reader = BufReader::new(file);
-
-    for line in reader.lines() {
-        println!("{}", line?);
-    }
-
-    Ok(())
+fn make_goat(){
+    println!("(_(");
+    println!("/_/'_____/)");
+    println!("  |      |");
+    println!("  |\"\"\"\"\"\"|");
 }
 
 fn main() {
@@ -136,9 +131,9 @@ fn main() {
     println!("Suppose you're on a game show, and you're given the choice of three doors: Behind one door is a car; behind the others, goats.");
     println!("You pick a door, say No. 1, and the host, who knows what's behind the doors, opens another door, say No. 3, which has a goat.");
     println!("She then says to you, \"Do you want to pick door No. 2?\" Is it to your advantage to switch your choice?");
-    read_file_line_by_line(r#"src\goat.txt"#).unwrap();
+   // read_file_line_by_line(r#"src\goat.txt"#).unwrap();
     play_goat_bleet();
-    
+    make_goat();
     let input_string:String = get_input("Enter number of simulations: MAX VALUE {2,147,483,647}");
     let input_int: i32 = input_string.parse::<i32>().unwrap();
     println!("3 Doors, No Change Win rate: {:#.3}", simulation(3, input_int as u32 , false)); 
