@@ -32,21 +32,21 @@ fn play_goat_bleet() {
 fn game_show(num: i64, change_choice: bool) -> GameshowResult {
     let mut rng:ThreadRng = rand::thread_rng();
     let mut doors:Vec<Door> = Vec::new();  
-    println!("Populating Door Vec");
+    log::debug!("Populating Door Vec");
     for a in 0..num{
         doors.push(Door{prize: false, chosen: false, opened: false});
     }
     let random_door = Uniform::from(0..num);
-    println!("Choosing Prize Door");
+    log::debug!("Choosing Prize Door");
     
     let prize_door = random_door.sample(&mut rng);
     doors[prize_door as usize].prize = true;
-    println!("Prize door is: {}", prize_door);
+    log::debug!("Prize door is: {}", prize_door);
 
-    println!("Choosing Initial Door"); 
+    log::debug!("Choosing Initial Door"); 
     let chosen_door = random_door.sample(&mut rng);
     doors[chosen_door as usize].chosen = true;
-    println!("Chosen door is: {}", chosen_door);
+    log::debug!("Chosen door is: {}", chosen_door);
     
     if change_choice {
         println!("Opening Other Doors");
@@ -97,9 +97,10 @@ fn simulation(num_doors: i64, num_simulations: i64, change_choice: bool) -> f64{
 
 
 fn main() {
+    env_logger::init();
     println!("Suppose you're on a game show, and you're given the choice of three doors: Behind one door is a car; behind the others, goats.");
     println!("You pick a door, say No. 1, and the host, who knows what's behind the doors, opens another door, say No. 3, which has a goat.");
     println!("She then says to you, \"Do you want to pick door No. 2?\" Is it to your advantage to switch your choice?");
     play_goat_bleet();
-    println!("Win rate: {}", simulation(3, 100, false)); 
+    println!("Win rate: {}", simulation(3, 100000, false)); 
 }
