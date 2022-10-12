@@ -1,10 +1,6 @@
 #![forbid(unsafe_code)]
 #![warn(missing_debug_implementations)]
 
-use std::fs::File;
-use std::i32;
-use std::io::BufRead;
-use std::io::BufReader;
 use std::io::Read;
 use rand::distributions::Uniform;
 use rand::distributions::Distribution;
@@ -14,7 +10,7 @@ use soloud::*;
 
 
 
-#[derive(Debug, Clone)]
+//ciw#[derive(Debug, Clone)]
 struct Door {
     prize: bool,
     chosen: bool,
@@ -61,8 +57,6 @@ fn game_show(num: i64, change_choice: bool) -> GameshowResult {
         for mut i in &mut doors {
             if i.chosen == false && i.prize == false  {i.opened = true;}
         }
-        // let mut new_door_list:Vec<Door> = Vec::new(); 
-        // for j in doors{if j.opened == false && j.chosen == false {new_door_list.push(j.clone());}}
         return new_choice(doors, prize_door)
     }
 
@@ -79,7 +73,7 @@ fn new_choice(doors: Vec<Door>, prize_door: i64) -> GameshowResult{
     let mut new_door_list:Vec<Door> = Vec::new(); 
     let mut rng:ThreadRng = rand::thread_rng();
     for door in doors {if door.opened == false && door.chosen == false {new_door_list.push(door);}} // Remove opened doors from options and change from the previously chosen door
-    if new_door_list.len() == 0 {return  GameshowResult{winner:true}}//If originally chosen door was correct, return false as the door would be changed
+    if new_door_list.len() == 0 {return  GameshowResult{winner:true}}//If only option wins, then do not randomize, simply return win
     let random_door = Uniform::from(0..new_door_list.len());
     let newly_chosen_door: i64 = random_door.sample(&mut rng) as i64;
     if newly_chosen_door == prize_door {
@@ -96,7 +90,7 @@ fn simulation(num_doors: i64, num_simulations: u32, change_choice: bool) -> frac
         let game = game_show(num_doors, change_choice);
         if game.winner {won_games = won_games + 1};
     }
-    // let win_percent = Percentage::from_decimal(won_games as f64 / num_simulations as f64);
+
     let win_percent:fraction::Fraction = fraction::Fraction::new(won_games as u32, num_simulations);
     return win_percent;
 }
@@ -131,7 +125,6 @@ fn main() {
     println!("Suppose you're on a game show, and you're given the choice of three doors: Behind one door is a car; behind the others, goats.");
     println!("You pick a door, say No. 1, and the host, who knows what's behind the doors, opens another door, say No. 3, which has a goat.");
     println!("She then says to you, \"Do you want to pick door No. 2?\" Is it to your advantage to switch your choice?");
-   // read_file_line_by_line(r#"src\goat.txt"#).unwrap();
     play_goat_bleet();
     make_goat();
     let input_string:String = get_input("Enter number of simulations: MAX VALUE {2,147,483,647}");
