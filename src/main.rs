@@ -65,6 +65,9 @@ fn game_show(num: i128, change_choice: bool) -> GameshowResult {
 
 }
 
+fn simulation(num_doors: i128, num_simulations: i128, change_choice: bool) -> Percentage{
+    
+}
 
 
 fn main() {
