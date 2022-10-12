@@ -1,9 +1,18 @@
+#![forbid(unsafe_code)]
+#![warn(missing_debug_implementations)]
+
+use std::fs::File;
 use std::i32;
+use std::io::BufRead;
+use std::io::BufReader;
 use std::io::Read;
 use rand::distributions::Uniform;
 use rand::distributions::Distribution;
 use rand::rngs::ThreadRng;
+use tqdm::tqdm;
 use soloud::*;
+
+
 
 #[derive(Debug, Clone)]
 struct Door {
@@ -82,19 +91,13 @@ fn new_choice(doors: Vec<Door>, prize_door: i64) -> GameshowResult{
 }
 
 fn simulation(num_doors: i64, num_simulations: u32, change_choice: bool) -> fraction::Fraction{
-    let mut simulations_remaining = num_simulations;
     let mut won_games = 0;
-    let mut simulations_completed = 0;
-    // let mut rng:ThreadRng = rand::thread_rng();
-    while simulations_remaining != 0{
+    for _ in tqdm(0..num_simulations){
         let game = game_show(num_doors, change_choice);
-        simulations_completed = simulations_completed + 1;
         if game.winner {won_games = won_games + 1};
-        simulations_remaining = simulations_remaining - 1;
     }
     // let win_percent = Percentage::from_decimal(won_games as f64 / num_simulations as f64);
     let win_percent:fraction::Fraction = fraction::Fraction::new(won_games as u32, num_simulations);
-    println!("Sims Complete: {}", simulations_completed);
     return win_percent;
 }
 
@@ -115,11 +118,25 @@ mod simple_user_input {
     }
 }
 
+//Source: https://kerkour.com/rust-read-file
+
+fn read_file_line_by_line(filepath: &str) -> Result<(), Box<dyn std::error::Error>> {
+    let file = File::open(filepath)?;
+    let reader = BufReader::new(file);
+
+    for line in reader.lines() {
+        println!("{}", line?);
+    }
+
+    Ok(())
+}
+
 fn main() {
     env_logger::init();
     println!("Suppose you're on a game show, and you're given the choice of three doors: Behind one door is a car; behind the others, goats.");
     println!("You pick a door, say No. 1, and the host, who knows what's behind the doors, opens another door, say No. 3, which has a goat.");
     println!("She then says to you, \"Do you want to pick door No. 2?\" Is it to your advantage to switch your choice?");
+    read_file_line_by_line(r#"src\goat.txt"#).unwrap();
     play_goat_bleet();
     
     let input_string:String = get_input("Enter number of simulations: MAX VALUE {2,147,483,647}");
