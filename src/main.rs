@@ -1,3 +1,5 @@
+use std::io::Read;
+
 // use percentage::Percentage;
 // use percentage::PercentageDecimal;
 // use rand::Rng;
@@ -112,5 +114,8 @@ fn main() {
     println!("Win rate: {}", simulation(5, i16::MAX as u32, true)); 
     println!("Win rate: {}", simulation(100, i16::MAX as u32, false)); 
     println!("Win rate: {}", simulation(100, i16::MAX as u32, true)); 
-    
+    println!("Press ENTER to continue...");
+    let buffer = &mut [0u8];
+    std::io::stdin().read_exact(buffer).unwrap();
+
 }
