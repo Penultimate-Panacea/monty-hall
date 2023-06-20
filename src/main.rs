@@ -1,5 +1,4 @@
 #![warn(missing_debug_implementations)]
-#![clippy::pedantic]
 #![deny(clippy::all)]
 #![deny(clippy::pedantic)]
 #![warn(clippy::cargo)]
@@ -9,7 +8,7 @@ use rand::distributions::Uniform;
 use rand::distributions::Distribution;
 use rand::rngs::ThreadRng;
 use tqdm::tqdm;
-use soloud::*;
+use soloud::{AudioExt, LoadExt, Soloud, Wav, audio};
 
 
 
@@ -36,7 +35,7 @@ fn play_goat_bleet() {
 
 }
 
-fn game_show(num: i64, change_choice: bool) -> GameshowResult {
+fn game_show(num: usize, change_choice: bool) -> GameshowResult {
     let mut rng:ThreadRng = rand::thread_rng();
     let mut doors:Vec<Door> = Vec::new();  
     log::debug!("Populating Door Vec");
@@ -47,18 +46,18 @@ fn game_show(num: i64, change_choice: bool) -> GameshowResult {
     log::debug!("Choosing Prize Door");
     
     let prize_door = random_door.sample(&mut rng);
-    doors[prize_door as usize].prize = true;
+    doors[prize_door].prize = true;
     log::debug!("Prize door is: {}", prize_door);
 
     log::debug!("Choosing Initial Door"); 
     let chosen_door = random_door.sample(&mut rng);
-    doors[chosen_door as usize].chosen = true;
+    doors[chosen_door].chosen = true;
     log::debug!("Chosen door is: {}", chosen_door);
     
     if change_choice {
         log::debug!("Opening Other Doors");
         for mut i in &mut doors {
-            if i.chosen == false && i.prize == false  {i.opened = true;}
+            if !i.chosen && !i.prize   {i.opened = true;}
         }
         return new_choice(doors, prize_door)
     }
@@ -66,36 +65,31 @@ fn game_show(num: i64, change_choice: bool) -> GameshowResult {
     if chosen_door == prize_door {
         return GameshowResult{winner: true}
     }
-    else {
-        return GameshowResult{winner: false}
-    }
-
+    GameshowResult{winner: false}
 }
 
-fn new_choice(doors: Vec<Door>, prize_door: i64) -> GameshowResult{
+fn new_choice(doors: Vec<Door>, prize_door: usize) -> GameshowResult{
     let mut new_door_list:Vec<Door> = Vec::new(); 
     let mut rng:ThreadRng = rand::thread_rng();
-    for door in doors {if door.opened == false && door.chosen == false {new_door_list.push(door);}} // Remove opened doors from options and change from the previously chosen door
-    if new_door_list.len() == 0 {return  GameshowResult{winner:true}}//If only option wins, then do not randomize, simply return win
+    for door in doors {if !door.opened && !door.chosen{new_door_list.push(door);}} // Remove opened doors from options and change from the previously chosen door
+    if new_door_list.is_empty() {return  GameshowResult{winner:true}}//If only option wins, then do not randomize, simply return win
     let random_door = Uniform::from(0..new_door_list.len());
-    let newly_chosen_door: i64 = random_door.sample(&mut rng) as i64;
+    let newly_chosen_door: usize = random_door.sample(&mut rng);
     if newly_chosen_door == prize_door {
         return GameshowResult{winner: true}
     }
-    else {
-        return GameshowResult{winner: false}
-    }
+    GameshowResult{winner: false}
 }
 
-fn simulation(num_doors: i64, num_simulations: u32, change_choice: bool) -> fraction::Fraction{
-    let mut won_games = 0;
+fn simulation(num_doors: usize, num_simulations: u32, change_choice: bool) -> fraction::Fraction{
+    let mut won_games:u32 = 0;
     for _ in tqdm(0..num_simulations){
         let game = game_show(num_doors, change_choice);
-        if game.winner {won_games = won_games + 1};
+        if game.winner {won_games += 1};
     }
 
-    let win_percent:fraction::Fraction = fraction::Fraction::new(won_games as u32, num_simulations);
-    return win_percent;
+    let win_percent:fraction::Fraction = fraction::Fraction::new(won_games, num_simulations);
+    win_percent
 }
 
 
@@ -105,7 +99,7 @@ use simple_user_input::get_input;
 mod simple_user_input {
     use std::io;
     pub fn get_input(prompt: &str) -> String{
-        println!("{}",prompt);
+        println!("{prompt}");
         let mut input = String::new();
         match io::stdin().read_line(&mut input) {
             Ok(_goes_into_input_above) => {},
@@ -131,13 +125,13 @@ fn main() {
     play_goat_bleet();
     make_goat();
     let input_string:String = get_input("Enter number of simulations: MAX VALUE {2,147,483,647}");
-    let input_int: i32 = input_string.parse::<i32>().unwrap();
-    println!("3 Doors, No Change Win rate: {:#.3}", simulation(3, input_int as u32 , false)); 
-    println!("3 Doors,  Change Win rate: {:#.3}", simulation(3, input_int as u32, true)); 
-    println!("5 Doors, No Change Win rate: {:#.3}", simulation(5, input_int as u32 , false)); 
-    println!("5 Doors,  Change Win rate: {:#.3}", simulation(5, input_int as u32, true)); 
-    println!("100 Doors, No Change Win rate: {:#.3}", simulation(100, input_int as u32, false)); 
-    println!("100 Doors,  Change Win rate: {:#.3}", simulation(100, input_int as u32, true)); 
+    let input_int: u32 = input_string.parse::<u32>().unwrap();
+    println!("3 Doors, No Change Win rate: {:#.3}", simulation(3, input_int  , false)); 
+    println!("3 Doors,  Change Win rate: {:#.3}", simulation(3, input_int , true)); 
+    println!("5 Doors, No Change Win rate: {:#.3}", simulation(5, input_int , false)); 
+    println!("5 Doors,  Change Win rate: {:#.3}", simulation(5, input_int , true)); 
+    println!("100 Doors, No Change Win rate: {:#.3}", simulation(100, input_int, false)); 
+    println!("100 Doors,  Change Win rate: {:#.3}", simulation(100, input_int, true)); 
     println!("Press ENTER to continue...");
     let buffer = &mut [0u8];
     std::io::stdin().read_exact(buffer).unwrap();
