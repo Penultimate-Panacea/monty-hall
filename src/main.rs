@@ -1,5 +1,8 @@
-#![forbid(unsafe_code)]
 #![warn(missing_debug_implementations)]
+#![clippy::pedantic]
+#![deny(clippy::all)]
+#![deny(clippy::pedantic)]
+#![warn(clippy::cargo)]
 
 use std::io::Read;
 use rand::distributions::Uniform;
@@ -10,7 +13,7 @@ use soloud::*;
 
 
 
-//ciw#[derive(Debug, Clone)]
+#[derive(Debug, Clone)]
 struct Door {
     prize: bool,
     chosen: bool,
