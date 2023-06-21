@@ -1,5 +1,13 @@
 use soloud::{AudioExt, LoadExt, Soloud, Wav, audio};
-
+///
+/// Plays the sound of a goat bleeting for fun. 
+///  # Arguments
+/// 
+///  * None
+/// 
+///  # Todo
+///  Maybe take an argument for different goat bleets?
+/// 
 pub fn play_goat_bleet() {
     let sl:Soloud = Soloud::default().unwrap();
     let mut wav:Wav = audio::Wav::default();
