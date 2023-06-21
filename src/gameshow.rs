@@ -17,3 +17,18 @@
 fn run_game (door_vec:Vec<Door>, change:bool) -> bool {
 	true
 }
+
+///
+/// Sets up the doors with the goats and prizes
+/// 
+/// # Arguments
+/// 
+/// * num_doors = The number of doors to set up
+/// 
+/// # Return
+/// 
+/// * door_vec = Vector of doors set up.
+/// 
+fn stagehand (num_doors:usize) -> Vec<Door> {
+	
+}
