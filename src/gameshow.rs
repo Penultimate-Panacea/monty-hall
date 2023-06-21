@@ -84,18 +84,18 @@ fn test_stagehand_lengths() {
 
 pub fn gameshow(num_doors: usize, num_runs: usize, change: bool) -> usize {
 	let mut won_games:usize = 0;
-	let runs: Vec<Vec<bool>> = vec![stagehand(num_doors); num_runs];
+	let runs: Vec<Vec<bool>> = vec![stagehand(num_doors); num_runs]; // Creates common solution 
 	if change {
 		ParallelIterator::for_each(IntoParallelIterator::into_par_iter(runs), |game| {
-			let winner: bool = run_game_no_change(game);
+			let winner: bool = run_game_no_change(game); // Each door is chosen randomly when tested
 			if winner { won_games += 1;}
 		});
 	}
 	else {
 		ParallelIterator::for_each(IntoParallelIterator::into_par_iter(runs), |game| {
-			let winner: bool = run_game_no_change(game);
+			let winner: bool = run_game_no_change(game); // Each door is chosen randomly when tested
 			if winner { won_games += 1;}
 		});		
 	}
-	won_games
+	won_games	
 }
