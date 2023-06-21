@@ -31,10 +31,16 @@ fn run_game_no_change (door_vec:&[bool]) -> bool {
 ///  
 /// * `winner:bool` = Whether or not the participant won the prize in this game.
 ///
-fn run_game_change (mut door_vec:Vec<bool>) -> bool {
+fn run_game_change (input_door_vec:Vec<bool>) -> bool {
+	let mut door_vec = input_door_vec.clone();
 	let mut rng:ThreadRng = rand::thread_rng();
-	let first_chosen_door = Uniform::from(0..door_vec.len()).sample(&mut rng);
-	door_vec.remove(first_chosen_door);
+	let first_chosen_door = Uniform::from(0..door_vec.len()).sample(&mut rng); // The Game Contestant Chooses a Door
+	let mut revealed_door = first_chosen_door; // The Game Show Host reveals a Door
+	while revealed_door == first_chosen_door && !door_vec[revealed_door] {
+		revealed_door = Uniform::from(0..door_vec.len()).sample(&mut rng);
+	} // Verify that the Chosen Door is not the prize door or the first chosen door.
+	if first_chosen_door > revealed_door{door_vec.remove(first_chosen_door); door_vec.remove(revealed_door);}
+	if first_chosen_door < revealed_door{door_vec.remove(revealed_door); door_vec.remove(first_chosen_door);}
 	let second_chosen_door = Uniform::from(0..door_vec.len()).sample(&mut rng);
 	door_vec[second_chosen_door]
 }
