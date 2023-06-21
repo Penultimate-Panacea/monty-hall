@@ -39,8 +39,12 @@ fn run_game_change (input_door_vec:Vec<bool>) -> bool {
 	while revealed_door == first_chosen_door && !door_vec[revealed_door] {
 		revealed_door = Uniform::from(0..door_vec.len()).sample(&mut rng);
 	} // Verify that the Chosen Door is not the prize door or the first chosen door.
+	
+	// The following if statements ensure the elements get removed in the correct order
+	
 	if first_chosen_door > revealed_door{door_vec.remove(first_chosen_door); door_vec.remove(revealed_door);}
 	if first_chosen_door < revealed_door{door_vec.remove(revealed_door); door_vec.remove(first_chosen_door);}
+	
 	let second_chosen_door = Uniform::from(0..door_vec.len()).sample(&mut rng);
 	door_vec[second_chosen_door]
 }
