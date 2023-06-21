@@ -22,8 +22,8 @@ use simple_user_input::get_input;
 mod simple_user_input {
     use std::io;
     pub fn get_input(prompt: &str) -> String{
-        println!("{prompt}");
-        let mut input = String::new();
+        println!("{}",prompt);
+        let mut input: String = String::new();
         match io::stdin().read_line(&mut input) {
             Ok(_goes_into_input_above) => {},
             Err(_no_updates_is_fine) => {},
@@ -47,7 +47,7 @@ fn main() {
     sound::play_goat_bleet();
     make_goat();
     let input_string:String = get_input("Enter number of simulations: MAX VALUE {2,147,483,647}");
-    let input_int: usize = input_string.parse::<usize>().unwrap();
+    let input_int: usize = input_string.parse::<u32>().unwrap() as usize;
     println!("3 Doors, No Change Win rate: {:#.3}", simulation(3, input_int  , false)); 
     println!("3 Doors,  Change Win rate: {:#.3}", simulation(3, input_int , true)); 
     println!("5 Doors, No Change Win rate: {:#.3}", simulation(5, input_int , false)); 
@@ -55,6 +55,6 @@ fn main() {
     println!("100 Doors, No Change Win rate: {:#.3}", simulation(100, input_int, false)); 
     println!("100 Doors,  Change Win rate: {:#.3}", simulation(100, input_int, true));
     println!("Press ENTER to continue...");
-    let buffer = &mut [0u8];
+    let buffer: &mut [u8; 1] = &mut [0u8];
     std::io::stdin().read_exact(buffer).unwrap();
 }
