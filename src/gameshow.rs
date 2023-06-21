@@ -34,7 +34,6 @@ fn run_game_no_change (door_vec:&[bool]) -> bool {
 fn run_game_change (mut door_vec:Vec<bool>) -> bool {
 	let mut rng:ThreadRng = rand::thread_rng();
 	let first_chosen_door = Uniform::from(0..=door_vec.len()).sample(&mut rng);
-	door_vec.clone();
 	door_vec.remove(first_chosen_door);
 	let second_chosen_door = Uniform::from(0..=door_vec.len()).sample(&mut rng);
 	door_vec[second_chosen_door]
