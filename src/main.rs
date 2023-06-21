@@ -5,7 +5,6 @@
 
 use std::io::Read;
 
-use tqdm::tqdm;
 
 mod sound;
 mod gameshow;
