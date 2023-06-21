@@ -5,59 +5,50 @@ use rayon::iter::{ParallelIterator, IntoParallelIterator};
 use std::sync::atomic::{AtomicUsize, Ordering};
 
 /// Runs a single game of the game show, the participant chooses a door within this function and the function returns if the participant wins or not.
-/// While https://xkcd.com/1282 makes excellent points, here we take the original conceptualization of the problem where winning a goat is considered negative
+/// While <https://xkcd.com/1282> makes excellent points, here we take the original conceptualization of the problem where winning a goat is considered negative
 ///  # Arguments
 /// 
-///  * door_vec:vec = List of Doors
-///  * 
-
-
-
-/// Runs a single game of the game show, the participant chooses a door within this function and the function returns if the participant wins or not.
-/// While https://xkcd.com/1282 makes excellent points, here we take the original conceptualization of the problem where winning a goat is considered negative
-///  # Arguments
-/// 
-///  * door_vec:Vec<bool> = List of doors, where true represents the prize door
+///  * `door_vec:Vec<bool>` = List of doors, where true represents the prize door
 /// 
 /// # Return
 ///  
-/// * winner:bool = Whether or not the participant won the prize in this game.
+/// * `winner:bool` = Whether or not the participant won the prize in this game.
 ///
-fn run_game_no_change (door_vec:Vec<bool>) -> bool {
+fn run_game_no_change (door_vec:&[bool]) -> bool {
 	let mut rng:ThreadRng = rand::thread_rng();
 	let chosen_door = Uniform::from(0..door_vec.len()).sample(&mut rng);
-	return door_vec[chosen_door]
+	door_vec[chosen_door]
 }
 
 
 /// Runs a single game of the game show, the participant chooses a door within this function and then discards that door, the participant then chooses a new door.
-/// While https://xkcd.com/1282 makes excellent points, here we take the original conceptualization of the problem where winning a goat is considered negative
+/// While <https://xkcd.com/1282> makes excellent points, here we take the original conceptualization of the problem where winning a goat is considered negative
 ///  # Arguments
 /// 
-///  * door_vec:Vec<bool> = List of doors, where true represents the prize door
+///  * `door_vec:Vec<bool>` = List of doors, where true represents the prize door
 /// 
 /// # Return
 ///  
-/// * winner:bool = Whether or not the participant won the prize in this game.
+/// * `winner:bool` = Whether or not the participant won the prize in this game.
 ///
-fn run_game_change (door_vec:Vec<bool>) -> bool {
+fn run_game_change (mut door_vec:Vec<bool>) -> bool {
 	let mut rng:ThreadRng = rand::thread_rng();
 	let first_chosen_door = Uniform::from(0..=door_vec.len()).sample(&mut rng);
-	let mut new_door_vec = door_vec.clone();
-	new_door_vec.remove(first_chosen_door);
+	door_vec.clone();
+	door_vec.remove(first_chosen_door);
 	let second_chosen_door = Uniform::from(0..=door_vec.len()).sample(&mut rng);
-	return door_vec[second_chosen_door]
+	door_vec[second_chosen_door]
 }
 ///
 /// Sets up the doors with the goats and prizes
 /// 
 /// # Arguments
 /// 
-/// * input_doors = The number of doors to set up, if 0 doors are suggested, correct number to usize::MAX
+/// * `input_doors: usize` = The number of doors to set up, if 0 doors are suggested, correct number to `usize::MAX`
 /// 
 /// # Return
 /// 
-/// * door_vec: Vec<bool> = Vector of doors set up where true represents the prize door.
+/// * `door_vec: Vec<bool>` = Vector of doors set up where true represents the prize door.
 /// 
 fn stagehand (input_doors:usize) -> Vec<bool> {
 	let mut num_doors = input_doors;
@@ -93,10 +84,9 @@ pub fn gameshow(num_doors: usize, num_runs: usize, change: bool) -> usize {
 	}
 	else {
 		ParallelIterator::for_each(IntoParallelIterator::into_par_iter(runs), |game| {
-			let winner: bool = run_game_no_change(game); // Each door is chosen randomly when tested
+			let winner: bool = run_game_no_change(&game); // Each door is chosen randomly when tested
 			if winner {won_games.fetch_add(1, Ordering::SeqCst);}
 		});		
 	}
-	let returned_games = won_games.into_inner();
-	returned_games	
+	won_games.into_inner()
 }
