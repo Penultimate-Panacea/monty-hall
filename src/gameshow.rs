@@ -1,7 +1,6 @@
 use rand::distributions::Uniform;
 use rand::distributions::Distribution;
 use rand::rngs::ThreadRng;
-use indicatif::ParallelProgressIterator;
 use rayon::iter::{ParallelIterator, IntoParallelIterator};
 
 /// Runs a single game of the game show, the participant chooses a door within this function and the function returns if the participant wins or not.
@@ -43,7 +42,7 @@ fn run_game_no_change (door_vec:Vec<bool>) -> bool {
 fn run_game_change (door_vec:Vec<bool>) -> bool {
 	let mut rng:ThreadRng = rand::thread_rng();
 	let first_chosen_door = Uniform::from(0..=door_vec.len()).sample(&mut rng);
-	let mut new_door_vec = door_vec;
+	let mut new_door_vec = door_vec.clone();
 	new_door_vec.remove(first_chosen_door);
 	let second_chosen_door = Uniform::from(0..=door_vec.len()).sample(&mut rng);
 	return door_vec[second_chosen_door]
