@@ -1,6 +1,8 @@
 use rand::distributions::Uniform;
 use rand::distributions::Distribution;
 use rand::rngs::ThreadRng;
+use indicatif::ParallelProgressIterator;
+use rayon::iter::{ParallelIterator, IntoParallelIterator};
 
 /// Runs a single game of the game show, the participant chooses a door within this function and the function returns if the participant wins or not.
 /// While https://xkcd.com/1282 makes excellent points, here we take the original conceptualization of the problem where winning a goat is considered negative
@@ -40,10 +42,10 @@ fn run_game_no_change (door_vec:Vec<bool>) -> bool {
 ///
 fn run_game_change (door_vec:Vec<bool>) -> bool {
 	let mut rng:ThreadRng = rand::thread_rng();
-	let first_chosen_door = Uniform::from(0..door_vec.len()).sample(&mut rng);
+	let first_chosen_door = Uniform::from(0..=door_vec.len()).sample(&mut rng);
 	let mut new_door_vec = door_vec;
 	new_door_vec.remove(first_chosen_door);
-	let second_chosen_door = Uniform::from(0..door_vec.len()).sample(&mut rng);
+	let second_chosen_door = Uniform::from(0..=door_vec.len()).sample(&mut rng);
 	return door_vec[second_chosen_door]
 }
 ///
@@ -78,4 +80,24 @@ fn test_stagehand_lengths() {
 	let test_len = 0xfffe;
 	let result_len = stagehand(test_len).len();
 	assert_eq!(test_len, result_len);
+}
+
+
+
+pub fn gameshow(num_doors: usize, num_runs: usize, change: bool) -> usize {
+	let mut won_games:usize = 0;
+	let runs: Vec<Vec<bool>> = vec![stagehand(num_doors); num_runs];
+	if change {
+		ParallelIterator::for_each(IntoParallelIterator::into_par_iter(runs), |game| {
+			let winner: bool = run_game_no_change(game);
+			if winner { won_games += 1;}
+		});
+	}
+	else {
+		ParallelIterator::for_each(IntoParallelIterator::into_par_iter(runs), |game| {
+			let winner: bool = run_game_no_change(game);
+			if winner { won_games += 1;}
+		});
+	}
+	return won_games;
 }
