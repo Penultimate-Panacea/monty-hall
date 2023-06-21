@@ -33,12 +33,12 @@ mod simple_user_input {
 }
 
 
-fn make_goat(){
-    println!("(_(");
-    println!("/_/'_____/)");
-    println!("  |      |");
-    println!("  |\"\"\"\"\"\"|");
-}
+    fn make_goat(){
+        println!("(_(");
+        println!("/_/'_____/)");
+        println!("  |      |");
+        println!("  |\"\"\"\"\"\"|");
+    }
 
 fn main() {
     println!("Suppose you're on a game show, and you're given the choice of three doors: Behind one door is a car; behind the others, goats.");

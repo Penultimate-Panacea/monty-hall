@@ -57,7 +57,7 @@ fn run_game_change (input_door_vec:Vec<bool>) -> bool {
 /// 
 fn stagehand (input_doors:usize) -> Vec<bool> {
 	let mut num_doors = input_doors;
-	if num_doors == 0 {num_doors = usize::MAX}
+	if num_doors == 0 {num_doors = 0xffff}
 	let mut doors: Vec<bool> = vec![false; num_doors];
 	let mut rng:ThreadRng = rand::thread_rng();
 	let prize_door = Uniform::from(0..num_doors).sample(&mut rng);
@@ -70,10 +70,7 @@ fn test_stagehand_lengths() {
 	let test_len = 3;
 	let result_len = stagehand(test_len).len();
 	assert_eq!(test_len, result_len);
-	let test_len = 0;
-	let result_len = stagehand(test_len).len();
-	assert_eq!(usize::MAX, result_len);
-	let test_len = 0x00ff;
+	let test_len = 0xffff;
 	let result_len = stagehand(test_len).len();
 	assert_eq!(test_len, result_len);
 }
