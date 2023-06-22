@@ -1,8 +1,7 @@
 use rand::distributions::Uniform;
 use rand::distributions::Distribution;
 use rand::rngs::ThreadRng;
-use rayon::iter::{ParallelIterator, IntoParallelIterator};
-use std::sync::atomic::{AtomicUsize, Ordering};
+
 
 /// Runs a single game of the game show, the participant chooses a door within this function and the function returns if the participant wins or not.
 /// While <https://xkcd.com/1282> makes excellent points, here we take the original conceptualization of the problem where winning a goat is considered negative
@@ -80,19 +79,19 @@ fn test_stagehand_lengths() {
 }
 
 pub fn gameshow(num_doors: usize, num_runs: usize, change: bool) -> usize {
-	let won_games = AtomicUsize::new(0);
+	let mut won_games: usize = 0;
 	let runs: Vec<Vec<bool>> = vec![stagehand(num_doors); num_runs]; // Creates common solution 
 	if change {
-		ParallelIterator::for_each(IntoParallelIterator::into_par_iter(runs), |game| {
+		for game in runs{
 			let winner: bool = run_game_change(game); // Each door is chosen randomly when tested
-			if winner { won_games.fetch_add(1, Ordering::SeqCst);}
-		});
+			if winner { won_games += 1;}
+		};
 	}
 	else {
-		ParallelIterator::for_each(IntoParallelIterator::into_par_iter(runs), |game| {
+		for game in runs {
 			let winner: bool = run_game_no_change(&game); // Each door is chosen randomly when tested
-			if winner {won_games.fetch_add(1, Ordering::SeqCst);}
-		});		
+			if winner {won_games += 1;}
+		};		
 	}
-	won_games.into_inner()
+	won_games
 }
