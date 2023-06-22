@@ -48,13 +48,14 @@ fn main() {
     make_goat();
     let input_string:String = get_input("Enter number of simulations: MAX VALUE {2,147,483,647}");
     let input_int: usize = input_string.parse::<u32>().unwrap() as usize;
-    println!("3 Doors, No Change Win rate: {:#.3}", simulation(3, input_int  , false)); 
-    println!("3 Doors,  Change Win rate: {:#.3}", simulation(3, input_int , true)); 
-    println!("5 Doors, No Change Win rate: {:#.3}", simulation(5, input_int , false)); 
-    println!("5 Doors,  Change Win rate: {:#.3}", simulation(5, input_int , true)); 
-    println!("100 Doors, No Change Win rate: {:#.3}", simulation(100, input_int, false)); 
-    println!("100 Doors,  Change Win rate: {:#.3}", simulation(100, input_int, true));
+    println!("3 Doors, No Change Win rate: {:#.5}", simulation(3, input_int  , false)); 
+    println!("3 Doors,  Change Win rate: {:#.5}", simulation(3, input_int , true)); 
+    println!("5 Doors, No Change Win rate: {:#.5}", simulation(5, input_int , false)); 
+    println!("5 Doors,  Change Win rate: {:#.5}", simulation(5, input_int , true)); 
+    println!("100 Doors, No Change Win rate: {:#.5}", simulation(100, input_int, false)); 
+    println!("100 Doors,  Change Win rate: {:#.5}", simulation(100, input_int, true));
     println!("Press ENTER to continue...");
     let buffer: &mut [u8; 1] = &mut [0u8];
     std::io::stdin().read_exact(buffer).unwrap();
 }
+
