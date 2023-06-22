@@ -1,6 +1,8 @@
+use kdam::BarExt;
 use rand::distributions::Uniform;
 use rand::distributions::Distribution;
 use rand::rngs::ThreadRng;
+use kdam::tqdm;
 
 
 /// Runs a single game of the game show, the participant chooses a door within this function and the function returns if the participant wins or not.
@@ -81,17 +83,21 @@ fn test_stagehand_lengths() {
 pub fn gameshow(num_doors: usize, num_runs: usize, change: bool) -> usize {
 	let mut won_games: usize = 0;
 	let runs: Vec<Vec<bool>> = vec![stagehand(num_doors); num_runs]; // Creates common solution 
+	let mut progressbar = tqdm!(total = runs.len());
 	if change {
 		for game in runs{
 			let winner: bool = run_game_change(game); // Each door is chosen randomly when tested
 			if winner { won_games += 1;}
+			progressbar.update(1);
 		};
 	}
 	else {
 		for game in runs {
 			let winner: bool = run_game_no_change(&game); // Each door is chosen randomly when tested
 			if winner {won_games += 1;}
+			progressbar.update(1);
 		};		
 	}
+	eprint!("\n");
 	won_games
 }
