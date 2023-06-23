@@ -3,15 +3,16 @@
 #![deny(clippy::pedantic)]
 #![warn(clippy::cargo)]
 
-use std::io::Read;
+use std::{io::Read, thread};
 
 
 mod sound;
 mod gameshow;
 
-fn simulation(num_doors: usize, num_simulations: usize, change_choice: bool) -> fraction::Fraction{
-    let won_games = gameshow::gameshow(num_doors,num_simulations,change_choice);
-    let win_percent:fraction::Fraction = fraction::Fraction::new(won_games as u64, num_simulations as u64);
+fn simulation(num_doors: usize, num_simulations: &usize, change_choice: bool) -> fraction::Fraction{
+    let local_sims: usize = *num_simulations;
+    let won_games = gameshow::gameshow(num_doors,local_sims,change_choice);
+    let win_percent:fraction::Fraction = fraction::Fraction::new(won_games as u64, local_sims as u64);
     win_percent
 }
 
@@ -47,14 +48,14 @@ fn main() {
     sound::play_goat_bleet();
     make_goat();
     let input_string:String = get_input("Enter number of simulations: MAX VALUE 2,147,483,647, suggested 500,000,000");
-    let input_int: usize = input_string.parse::<u32>().unwrap() as usize;
-    println!("3 Doors,      No Change Win rate: {:#.5}", simulation(3, input_int  , false)); 
-    println!("3 Doors,         Change Win rate: {:#.5}", simulation(3, input_int , true)); 
-    println!("5 Doors,      No Change Win rate: {:#.5}", simulation(5, input_int , false)); 
-    println!("5 Doors,         Change Win rate: {:#.5}", simulation(5, input_int , true)); 
-    println!("100 Doors,    No Change Win rate: {:#.5}", simulation(100, input_int, false)); 
-    println!("100 Doors,       Change Win rate: {:#.5}", simulation(100, input_int, true));
-    println!("Press ENTER to continue...");
+    let input_int: usize = input_string.parse::<u32>().unwrap() as usize;   
+    thread::spawn(move || {println!("3 Doors,      No Change Win rate: {:#.5}", simulation(3, &input_int  , false));});  
+    thread::spawn(move || {println!("3 Doors,         Change Win rate: {:#.5}", simulation(3, &input_int  , true));}); 
+    thread::spawn(move || {println!("5 Doors,      No Change Win rate: {:#.5}", simulation(5, &input_int  , false));}); 
+    thread::spawn(move || {println!("5 Doors,         Change Win rate: {:#.5}", simulation(5, &input_int  , true));}); 
+    thread::spawn(move || {println!("100 Doors,    No Change Win rate: {:#.5}", simulation(100, &input_int  , false));}); 
+    thread::spawn(move || {println!("100 Doors,       Change Win rate: {:#.5}", simulation(100, &input_int  , true));});
+    println!("Press ENTER to quit...");  
     let buffer: &mut [u8; 1] = &mut [0u8];
     std::io::stdin().read_exact(buffer).unwrap();
 }
