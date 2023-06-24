@@ -3,10 +3,7 @@
 #![deny(clippy::pedantic)]
 #![warn(clippy::cargo)]
 
-use std::sync::{Arc, Mutex};
-use std::thread;
-use tqdm::Tqdm;
-
+use std::{io::Read, thread};
 
 
 mod sound;
@@ -51,29 +48,15 @@ fn main() {
     sound::play_goat_bleet();
     make_goat();
     let input_string:String = get_input("Enter number of simulations: MAX VALUE 2,147,483,647, suggested 500,000,000");
-    let input_intL: u32 = 100; 
-
-    let num_threads = 6;
-    let handles: Vec<_> = (0..num_threads).map(|i| {
-        let pb = Arc::new(Mutex::new(tqdm::Tqdm::new()));
-
-        thread::spawn(move || {
-            let mut pb = pb.lock().unwrap();
-            match i {
-                0 => pb.println(format!("3 Doors,      No Change Win rate: {:#.5}", simulation(3, &input_int, false))),
-                1 => pb.println(format!("3 Doors,         Change Win rate: {:#.5}", simulation(3, &input_int, true))),
-                2 => pb.println(format!("5 Doors,      No Change Win rate: {:#.5}", simulation(5, &input_int, false))),
-                3 => pb.println(format!("5 Doors,         Change Win rate: {:#.5}", simulation(5, &input_int, true))),
-                4 => pb.println(format!("100 Doors,    No Change Win rate: {:#.5}", simulation(100, &input_int, false))),
-                5 => pb.println(format!("100 Doors,       Change Win rate: {:#.5}", simulation(100, &input_int, true))),
-                _ => (),
-            }
-        })
-    }).collect(); 
-    
-    
-    for handle in handles {
-        handle.join().unwrap();
-    }
+    let input_int: usize = input_string.parse::<u32>().unwrap() as usize;   
+    thread::spawn(move || {println!("3 Doors,      No Change Win rate: {:#.5}", simulation(3, &input_int  , false));});  
+    thread::spawn(move || {println!("3 Doors,         Change Win rate: {:#.5}", simulation(3, &input_int  , true));}); 
+    thread::spawn(move || {println!("5 Doors,      No Change Win rate: {:#.5}", simulation(5, &input_int  , false));}); 
+    thread::spawn(move || {println!("5 Doors,         Change Win rate: {:#.5}", simulation(5, &input_int  , true));}); 
+    thread::spawn(move || {println!("100 Doors,    No Change Win rate: {:#.5}", simulation(100, &input_int  , false));}); 
+    thread::spawn(move || {println!("100 Doors,       Change Win rate: {:#.5}", simulation(100, &input_int  , true));});
+    println!("Press ENTER to quit...");  
+    let buffer: &mut [u8; 1] = &mut [0u8];
+    std::io::stdin().read_exact(buffer).unwrap();
 }
 
