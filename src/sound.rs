@@ -7,6 +7,7 @@ use soloud::{AudioExt, LoadExt, Soloud, Wav, audio};
 /// 
 ///  # Todo
 ///  Maybe take an argument for different goat bleets?
+///     Replace soloud with more native rust lib
 /// 
 pub fn play_goat_bleet() {
     let sl:Soloud = Soloud::default().unwrap();
