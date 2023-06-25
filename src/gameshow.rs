@@ -80,6 +80,19 @@ fn test_stagehand_lengths() {
 	assert_eq!(test_len, result_len);
 }
 
+
+#[test]
+fn test_stagehand_one_prize_door(){
+	let door_vec: Vec<bool> = stagehand(100_000);
+	let mut prize_doors: Vec<bool> = vec![];
+	for door in door_vec {
+		if door == true{
+			prize_doors.push(true);
+		}
+	}
+	assert_eq!(prize_doors.len(), 1);
+
+}
 pub fn gameshow(num_doors: usize, num_runs: usize, change: bool) -> usize {
 	let mut won_games: usize = 0;
 	let runs: Vec<Vec<bool>> = vec![stagehand(num_doors); num_runs]; // Creates common solution 
