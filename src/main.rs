@@ -4,9 +4,6 @@
 #![warn(clippy::cargo)]
 
 use std::{io::Read, thread, sync::{Arc, Mutex, Condvar}};
-
-
-mod sound;
 mod gameshow;
 
 fn simulation(num_doors: usize, num_simulations: &usize, change_choice: bool) -> fraction::Fraction{
@@ -29,7 +26,6 @@ fn main() {
     println!("You pick a door, say No. 1, and the host, who knows what's behind the doors, opens another door, say No. 3, which has a goat.");
     println!("She then says to you, \"Do you want to pick door No. 2?\" Is it to your advantage to switch your choice?");
     println!("Running {input_int} simulations");
-    sound::play_goat_bleet();
     make_goat();
     let done = Arc::new((Mutex::new(false), Condvar::new()));
     // Spawn threads
